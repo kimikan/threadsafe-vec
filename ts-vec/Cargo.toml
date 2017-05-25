@@ -1,0 +1,6 @@
+[package]
+name = "ts-vec"
+version = "0.1.0"
+authors = ["Kimi <kimi.kan@xxxx.com>"]
+
+[dependencies]
