@@ -1,3 +1,8 @@
+// this version is not thread-safe implementation
+//for Item access
+//the if change Arc<RefCell<Item>> to Arc<RwLock<Item>>, it's better
+//or just remove RefCell.   let the item shares the same RwLock with List
+// this example just show these differences
 
 use std::sync::RwLock;
 use std::sync::Arc;
