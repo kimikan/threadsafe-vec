@@ -6,35 +6,36 @@
 
 use std::sync::RwLock;
 use std::sync::Arc;
-use std::cell::RefCell;
 
 pub struct Item {
     pub _str: String,
 }
 
 struct SortedOrderList {
-    _vec: RwLock<Vec<Arc<RefCell<Item>>>>,
+    _vec: RwLock<Vec<Arc<RwLock<Item>>>>,
 }
 
 impl SortedOrderList {
 
     fn new() -> SortedOrderList {
-        let vec: Vec<Arc<RefCell<Item>>> = vec![];
-        SortedOrderList{_vec : RwLock::new(vec) }
+        let vec: Vec<Arc<RwLock<Item>>> = vec![];
+        SortedOrderList{
+            _vec : RwLock::new(vec) 
+        }
     }
 
     fn add(&self, c: Item) {
         match self._vec.write() {
             Ok(mut e) => {
-                e.push(Arc::new(RefCell::new(c)));
+                e.push(Arc::new(RwLock::new(c)));
             }
             Err(_) => {}
         }
     }
 
     pub fn find(&self,
-                f: fn(Arc<RefCell<Item>>) -> bool)
-                -> Option<Arc<RefCell<Item>>> {
+                f: fn(Arc<RwLock<Item>>) -> bool)
+                -> Option<Arc<RwLock<Item>>> {
         match self._vec.write() {
             Ok(ref mut e) => {
                 let mut index: i32 = -1;
@@ -56,8 +57,8 @@ impl SortedOrderList {
     }
 }
 
-fn finder1(c:Arc<RefCell<Item>>)->bool{
-    c.borrow_mut()._str == "x" 
+fn finder1(c:Arc<RwLock<Item>>)->bool{
+    c.read().unwrap()._str == "x" 
 }
 
 fn main() {
@@ -68,7 +69,7 @@ fn main() {
     lck.add(c);
     lck.add(c2);
 
-    let x:Arc<RefCell<Item>> = lck.find(finder1).unwrap();
+    let x:Arc<RwLock<Item>> = lck.find(finder1).unwrap();
 
-    println!("Hello, world: {:?}", x.borrow_mut()._str);
+    println!("Hello, world: {:?}", x.read().unwrap()._str);
 }
