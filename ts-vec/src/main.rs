@@ -1,8 +1,4 @@
 // this version is not thread-safe implementation
-//for Item access
-//the if change Arc<RefCell<Item>> to Arc<RwLock<Item>>, it's better
-//or just remove RefCell.   let the item shares the same RwLock with List
-// this example just show these differences
 
 use std::sync::RwLock;
 use std::sync::Arc;
@@ -36,8 +32,8 @@ impl SortedOrderList {
     pub fn find(&self,
                 f: fn(Arc<RwLock<Item>>) -> bool)
                 -> Option<Arc<RwLock<Item>>> {
-        match self._vec.write() {
-            Ok(ref mut e) => {
+        match self._vec.read() {
+            Ok(ref e) => {
                 let mut index: i32 = -1;
                 for elem in e.iter() {
                     index += 1;
@@ -70,6 +66,10 @@ fn main() {
     lck.add(c2);
 
     let x:Arc<RwLock<Item>> = lck.find(finder1).unwrap();
-
+    
+    {
+        let ref mut item = x.write().unwrap();
+        item._str = "z".to_owned();
+    }
     println!("Hello, world: {:?}", x.read().unwrap()._str);
 }
